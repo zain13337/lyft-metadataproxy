@@ -1,0 +1,16 @@
+# Boto3 is the Amazon Web Services (AWS) Software Development Kit (SDK)
+# for Python.
+# License: Apache2
+# Use: For KMS
+boto3==1.1.3
+
+# Flask
+# License: BSD
+# Upstream url: http://github.com/mitsuhiko/flask/
+# Use: For API.
+Flask==0.10.1
+
+# Python client for Docker.
+# License: Apache2
+# Upstream url: https://github.com/docker/docker-py/
+docker-py==1.6.0
