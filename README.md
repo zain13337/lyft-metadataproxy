@@ -68,7 +68,7 @@ the metadataproxy. The following example assumes the metadataproxy is run on
 the host, and not in a container:
 
 ```
-/sbin/iptables --wait -t nat -A PREROUTING  -i docker0 -p tcp --dport 80 --destination 169.254.169.254 --jump DNAT --to-destination 127.0.0.1:45001
+/sbin/iptables --wait -t nat -A PREROUTING  -i docker0 -p tcp --dport 80 --destination 169.254.169.254 --jump DNAT --to-destination 127.0.0.1:8000
 ```
 
 If you'd like to start the metadataproxy in a container, it's recommended to
