@@ -1,6 +1,6 @@
-# Metadata Proxy
+# metadataproxy
 
-The metadata proxy is used to allow containers to acquire IAM roles.
+The metadataproxy is used to allow containers to acquire IAM roles.
 
 ## Installation
 
