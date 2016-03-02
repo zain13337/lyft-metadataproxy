@@ -14,18 +14,3 @@ Flask==0.10.1
 # License: Apache2
 # Upstream url: https://github.com/docker/docker-py/
 docker-py==1.6.0
-
-# License: MIT
-# Upstream url: http://gunicorn.org/
-# Use: For wsgi running
-gunicorn==19.3.0
-
-# License: MIT
-# Upstream url: http://www.gevent.org/
-# Use: For concurrency
-gevent==1.0.2
-
-# License: MIT
-# Upstream url: https://github.com/python-greenlet/greenlet
-# Use: For concurrency
-greenlet==0.4.9
