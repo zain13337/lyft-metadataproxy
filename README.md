@@ -33,7 +33,7 @@ The metadataproxy has two basic modes of operation:
 To enable mocking, use the environment variable:
 
 ```
-MOCK_API=true
+export MOCK_API=true
 ```
 
 ### AWS credentials
@@ -53,6 +53,13 @@ then assumes the role and gives back STS credentials in the metadata response.
 
 So, to specify the role of a container, simply launch it with the IAM_ROLE
 environment variable set to the IAM role you wish the container to run with.
+
+If you'd like containers to fallback to a default role if no role is specified,
+you can use the following configuration option:
+
+```
+export DEFAULT_ROLE=my-default-role
+```
 
 ### Routing container traffic to metadataproxy
 
