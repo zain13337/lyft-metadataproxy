@@ -1,7 +1,6 @@
 name: metadataproxy
 description: Intercepts calls to EC2 Metadata Service from containers.
 repository: git@github.com:lyft/metadataproxy.git
-credentials: False
 containers:
   - name: server
     network: host
