@@ -5,6 +5,5 @@ containers:
   - name: server
     network: host
     mounts:
-      - /var/run/syslog
       - /var/run/docker.sock
     privileged: True
