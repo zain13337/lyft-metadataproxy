@@ -75,7 +75,7 @@ If you'd like to start the metadataproxy in a container, it's recommended to
 use host-only networking. Also, it's necessary to volume mount in the docker
 socket, as metadataproxy must be able to interact with docker.
 
-## Run metadataproxy
+## Run metadataproxy without docker
 
 In the following we assume _my\_config_ is a bash file with exports for all of
 the necessary settings discussed in the configuration section.
@@ -84,5 +84,16 @@ the necessary settings discussed in the configuration section.
 source my_config
 cd /srv/metadataproxy
 source venv/bin/activate
-gunicorn wsgi:app --workers=2 -k gevent
+gunicorn metadataproxy:app --workers=2 -k gevent
+```
+
+## Run metadataproxy with docker
+
+For production purposes, you'll want to kick up a container to run.
+You can build one with the included Dockerfile.  To run, do something like:
+```bash
+docker run --net=host \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -e MOCK_API=true \
+    metadataproxy
 ```
