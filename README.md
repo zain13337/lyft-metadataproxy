@@ -75,6 +75,17 @@ If you'd like to start the metadataproxy in a container, it's recommended to
 use host-only networking. Also, it's necessary to volume mount in the docker
 socket, as metadataproxy must be able to interact with docker.
 
+Be aware that non-host-mode containers will not be able to contact
+127.0.0.1 in the host network stack.  As an alternative, you can use
+the meta-data service to find the local address.  In this case, you
+probably want to restrict proxy access to the docker0 interface!
+
+```
+LOCAL_IPV4=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
+/sbin/iptables --wait -t nat -A PREROUTING  -i docker0 -p tcp --dport 80 --destination 169.254.169.254 --jump DNAT --to-destination $LOCAL_IPV4:8000
+/sbin/iptables --wait -I INPUT 1 -p tcp --dport 80 \! -i docker0 -j DROP
+```
+
 ## Run metadataproxy without docker
 
 In the following we assume _my\_config_ is a bash file with exports for all of

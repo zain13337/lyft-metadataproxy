@@ -8,4 +8,4 @@ EXPOSE 8000
 VOLUME ["/var/run/docker.sock"]
 
 WORKDIR /srv/metadataproxy
-CMD ["gunicorn", "metadataproxy:app", "--workers=2", "-k", "gevent"]
+CMD ["/bin/sh", "run-server.sh"]
