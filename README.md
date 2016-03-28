@@ -61,6 +61,38 @@ you can use the following configuration option:
 export DEFAULT_ROLE=my-default-role
 ```
 
+### Role structure
+
+A useful way to deploy this metadataproxy is with a two-tier role
+structure:
+
+1.  The first tier is the EC2 service role for the instances running
+    your containers.  Call it `DockerHostRole`.  Your instances must
+    be launched with a policy that assigns this role.
+
+2.  The second tier is the role that each container will use.  These
+    roles must trust your own account ("Role for Cross-Account
+    Access" in AWS terms).  Call it `ContainerRole1`.
+
+3.  metadataproxy needs to query and assume the container role.  So
+    the `DockerHostRole` policy must permit this for each container
+    role.  For example:
+    ```
+    "Statement": [ {
+        "Effect": "Allow",
+        "Action": [
+            "iam:GetRole",
+            "sts:AssumeRole"
+        ],
+        "Resource": [
+            "arn:aws:iam::012345678901:role/ContainerRole1",
+            "arn:aws:iam::012345678901:role/ContainerRole2"
+        ]
+    } ]
+    ```
+
+4. Now customize `ContainerRole1` & friends as you like
+
 ### Routing container traffic to metadataproxy
 
 Using iptables, we can forward traffic meant to 169.254.169.254 from docker0 to
