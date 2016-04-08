@@ -92,7 +92,7 @@ def get_role_name_from_ip(ip):
     if container:
         env = container['Config']['Env']
         for e in env:
-            key, val = e.split('=', 1)
+            key, _, val = e.partition('=')
             if key == 'IAM_ROLE':
                 return val
         return app.config['DEFAULT_ROLE']
