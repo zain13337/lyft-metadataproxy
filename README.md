@@ -137,6 +137,5 @@ You can build one with the included Dockerfile.  To run, do something like:
 ```bash
 docker run --net=host \
     -v /var/run/docker.sock:/var/run/docker.sock \
-    -e MOCK_API=true \
     metadataproxy
 ```
