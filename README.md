@@ -61,6 +61,38 @@ you can use the following configuration option:
 export DEFAULT_ROLE=my-default-role
 ```
 
+### Role structure
+
+A useful way to deploy this metadataproxy is with a two-tier role
+structure:
+
+1.  The first tier is the EC2 service role for the instances running
+    your containers.  Call it `DockerHostRole`.  Your instances must
+    be launched with a policy that assigns this role.
+
+2.  The second tier is the role that each container will use.  These
+    roles must trust your own account ("Role for Cross-Account
+    Access" in AWS terms).  Call it `ContainerRole1`.
+
+3.  metadataproxy needs to query and assume the container role.  So
+    the `DockerHostRole` policy must permit this for each container
+    role.  For example:
+    ```
+    "Statement": [ {
+        "Effect": "Allow",
+        "Action": [
+            "iam:GetRole",
+            "sts:AssumeRole"
+        ],
+        "Resource": [
+            "arn:aws:iam::012345678901:role/ContainerRole1",
+            "arn:aws:iam::012345678901:role/ContainerRole2"
+        ]
+    } ]
+    ```
+
+4. Now customize `ContainerRole1` & friends as you like
+
 ### Routing container traffic to metadataproxy
 
 Using iptables, we can forward traffic meant to 169.254.169.254 from docker0 to
@@ -75,7 +107,18 @@ If you'd like to start the metadataproxy in a container, it's recommended to
 use host-only networking. Also, it's necessary to volume mount in the docker
 socket, as metadataproxy must be able to interact with docker.
 
-## Run metadataproxy
+Be aware that non-host-mode containers will not be able to contact
+127.0.0.1 in the host network stack.  As an alternative, you can use
+the meta-data service to find the local address.  In this case, you
+probably want to restrict proxy access to the docker0 interface!
+
+```
+LOCAL_IPV4=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
+/sbin/iptables --wait -t nat -A PREROUTING  -i docker0 -p tcp --dport 80 --destination 169.254.169.254 --jump DNAT --to-destination $LOCAL_IPV4:8000
+/sbin/iptables --wait -I INPUT 1 -p tcp --dport 80 \! -i docker0 -j DROP
+```
+
+## Run metadataproxy without docker
 
 In the following we assume _my\_config_ is a bash file with exports for all of
 the necessary settings discussed in the configuration section.
@@ -84,5 +127,15 @@ the necessary settings discussed in the configuration section.
 source my_config
 cd /srv/metadataproxy
 source venv/bin/activate
-gunicorn wsgi:app --workers=2 -k gevent
+gunicorn metadataproxy:app --workers=2 -k gevent
+```
+
+## Run metadataproxy with docker
+
+For production purposes, you'll want to kick up a container to run.
+You can build one with the included Dockerfile.  To run, do something like:
+```bash
+docker run --net=host \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    metadataproxy
 ```

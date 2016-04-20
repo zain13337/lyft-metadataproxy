@@ -1,4 +1,11 @@
-FROM lyft/gunicorn:df28a20af3e2ea3d006859b4da2034d36d4fa028
-COPY requirements.txt /code/metadataproxy/requirements.txt
-RUN /code/containers/python/pip-installer /code/metadataproxy/requirements.txt
-COPY . /code/metadataproxy/
+FROM python:2.7.11
+COPY . /srv/metadataproxy/
+
+RUN pip --no-cache-dir install -r /srv/metadataproxy/requirements.txt && \
+    pip --no-cache-dir install -r /srv/metadataproxy/requirements_wsgi.txt
+
+EXPOSE 8000
+VOLUME ["/var/run/docker.sock"]
+
+WORKDIR /srv/metadataproxy
+CMD ["/bin/sh", "run-server.sh"]
