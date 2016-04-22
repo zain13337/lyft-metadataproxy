@@ -87,15 +87,13 @@ source venv/bin/activate
 gunicorn wsgi:app --workers=2 -k gevent
 ```
 
-# Contributing
+## Contributing
 
-## Code of conduct
+### Code of conduct
 
 This project is governed by [Lyft's code of
 conduct](https://github.com/lyft/code-of-conduct).
 All contributors and participants agree to abide by its terms.
-
-## Contributing code
 
 ### Sign the Contributor License Agreement (CLA)
 
