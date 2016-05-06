@@ -1,4 +1,4 @@
-FROM lyft/gunicorn:70f2e13b372deb0dd3f45083836cc6121d0cea04
+FROM lyft/gunicorn:5951eea6fb5549b2e869d9776316bcc101c920e1
 COPY requirements.txt /code/metadataproxy/requirements.txt
 RUN /code/containers/python/pip-installer /code/metadataproxy/requirements.txt
 COPY . /code/metadataproxy/
