@@ -223,7 +223,7 @@ def get_role_arn(role_name):
     # in and use that.
     account_id = app.config['AWS_ACCOUNT_MAP'].get(account_name, account_name)
     # Return a generated ARN
-    return 'arn:aws:iam::{0}:role/{1}'.format(assume_role, account_id)
+    return 'arn:aws:iam::{0}:role/{1}'.format(account_id, assume_role)
 
 
 @log_exec_time
