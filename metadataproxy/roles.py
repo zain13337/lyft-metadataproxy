@@ -179,22 +179,6 @@ def get_role_info_from_ip(ip):
     }
 
 
-def _get_credential_reponse(assumed_role):
-    time_format = "%Y-%m-%dT%H:%M:%SZ"
-    credentials = assumed_role['Credentials']
-    expiration = credentials['Expiration']
-    updated = expiration - datetime.timedelta(minutes=60)
-    return {
-        'Code': 'Success',
-        'LastUpdated': updated.strftime(time_format),
-        'Type': 'AWS-HMAC',
-        'AccessKeyId': credentials['AccessKeyId'],
-        'SecretAccessKey': credentials['SecretAccessKey'],
-        'Token': credentials['SessionToken'],
-        'Expiration': expiration.strftime(time_format)
-    }
-
-
 def get_role_arn(role_name):
     # Role name is an arn. Just return it.
     if role_name.startswith('arn:aws'):
@@ -227,14 +211,14 @@ def get_role_arn(role_name):
 
 
 @log_exec_time
-def get_assumed_role(requested_role, api_version='latest'):
+def get_assumed_role(requested_role):
     if requested_role in ROLES:
         assumed_role = ROLES[requested_role]
         expiration = assumed_role['Credentials']['Expiration']
         now = datetime.datetime.now(dateutil.tz.tzutc())
         expire_check = now + datetime.timedelta(minutes=5)
         if expire_check < expiration:
-            return _get_credential_reponse(assumed_role)
+            return assumed_role
     arn = get_role_arn(requested_role)
     with PrintingBlockTimer('sts.assume_role'):
         sts = sts_client()
@@ -243,7 +227,25 @@ def get_assumed_role(requested_role, api_version='latest'):
             RoleSessionName='devproxyauth'
         )
     ROLES[requested_role] = assumed_role
-    return _get_credential_reponse(assumed_role)
+    return assumed_role
+
+
+@log_exec_time
+def get_assumed_role_credentials(requested_role, api_version='latest'):
+    assumed_role = get_assumed_role(requested_role)
+    time_format = "%Y-%m-%dT%H:%M:%SZ"
+    credentials = assumed_role['Credentials']
+    expiration = credentials['Expiration']
+    updated = expiration - datetime.timedelta(minutes=60)
+    return {
+        'Code': 'Success',
+        'LastUpdated': updated.strftime(time_format),
+        'Type': 'AWS-HMAC',
+        'AccessKeyId': credentials['AccessKeyId'],
+        'SecretAccessKey': credentials['SecretAccessKey'],
+        'Token': credentials['SessionToken'],
+        'Expiration': expiration.strftime(time_format)
+    }
 
 
 class GetRoleError(Exception):

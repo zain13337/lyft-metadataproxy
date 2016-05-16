@@ -39,7 +39,7 @@ def iam_sts_credentials(api_version, role_name):
         log.error(msg.format(role_name, role_name_from_ip))
         return '', 404
     log.debug('Providing assumed role credentials for {0}'.format(role_name))
-    assumed_role = roles.get_assumed_role(
+    assumed_role = roles.get_assumed_role_credentials(
         requested_role=role_name,
         api_version=api_version
     )

@@ -140,7 +140,7 @@ def get_role_credentials(api_version, requested_role):
     if role_name != requested_role:
         return '', 403
     try:
-        assumed_role = roles.get_assumed_role(
+        assumed_role = roles.get_assumed_role_credentials(
             requested_role=requested_role,
             api_version=api_version
         )
