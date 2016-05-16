@@ -43,3 +43,6 @@ nosetests.xml
 .DS_store
 .zedstate
 .idea
+
+# virtualenvs
+venv

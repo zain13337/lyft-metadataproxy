@@ -4,7 +4,7 @@ import dateutil.tz
 import json
 import socket
 import re
-import logging
+import timeit
 
 # Import third party libs
 import boto3
@@ -14,6 +14,7 @@ from botocore.exceptions import ClientError
 
 # Import metadataproxy libs
 from metadataproxy import app
+from metadataproxy import log
 
 ROLES = {}
 CONTAINER_MAPPING = {}
@@ -26,6 +27,36 @@ if app.config['ROLE_MAPPING_FILE']:
         ROLE_MAPPINGS = json.loads(f.read())
 else:
     ROLE_MAPPINGS = {}
+
+
+class BlockTimer(object):
+    def __enter__(self):
+        self.start_time = timeit.default_timer()
+        return self
+
+    def __exit__(self, *args):
+        self.end_time = timeit.default_timer()
+        self.exec_duration = self.end_time - self.start_time
+
+
+class PrintingBlockTimer(BlockTimer):
+    def __init__(self, prefix=''):
+        self.prefix = prefix
+
+    def __exit__(self, *args):
+        super(PrintingBlockTimer, self).__exit__(*args)
+        msg = "Execution took {0:f}s".format(self.exec_duration)
+        if self.prefix:
+            msg = self.prefix + ': ' + msg
+        log.debug(msg)
+
+
+def log_exec_time(method):
+    def timed(*args, **kw):
+        with PrintingBlockTimer(method.__name__):
+            result = method(*args, **kw)
+        return result
+    return timed
 
 
 def docker_client():
@@ -49,29 +80,49 @@ def sts_client():
     return _sts_client
 
 
+@log_exec_time
 def find_container(ip):
     pattern = re.compile(app.config['HOSTNAME_MATCH_REGEX'])
     client = docker_client()
+    # Try looking at the container mapping cache first
     if ip in CONTAINER_MAPPING:
+        log.info('Container id for IP {0} in cache'.format(ip))
         try:
-            return client.inspect_container(CONTAINER_MAPPING[ip])
+            with PrintingBlockTimer('Container inspect'):
+                c = client.inspect_container(CONTAINER_MAPPING[ip])
+            return c
         except docker.errors.NotFound:
+            msg = 'Container id {0} no longer mapped to {1}'
+            log.error(msg.format(CONTAINER_MAPPING[ip], ip))
             del CONTAINER_MAPPING[ip]
-    if app.config['ROLE_REVERSE_LOOKUP']:
-        try:
-            _fqdn = socket.gethostbyaddr(ip)[0]
-        except socket.herror:
-            pass
-    # TODO: cache id -> container data in an LRU
-    _ids = [c['Id'] for c in client.containers()]
+
+    _fqdn = None
+    with PrintingBlockTimer('Reverse DNS'):
+        if app.config['ROLE_REVERSE_LOOKUP']:
+            try:
+                _fqdn = socket.gethostbyaddr(ip)[0]
+            except socket.error as e:
+                log.error('gethostbyaddr failed: {0}'.format(e.args))
+                pass
+
+    with PrintingBlockTimer('Container fetch'):
+        _ids = [c['Id'] for c in client.containers()]
+
     for _id in _ids:
         try:
-            c = client.inspect_container(_id)
+            with PrintingBlockTimer('Container inspect'):
+                c = client.inspect_container(_id)
         except docker.errors.NotFound:
+            log.error('Container id {0} not found'.format(_id))
             continue
+        # Try matching container to caller by IP address
         _ip = c['NetworkSettings']['IPAddress']
         if ip == _ip:
+            msg = 'Container id {0} mapped to {1} by IP match'
+            log.debug(msg.format(_id, ip))
+            CONTAINER_MAPPING[ip] = _id
             return c
+        # Try matching container to caller by hostname match
         if app.config['ROLE_REVERSE_LOOKUP']:
             hostname = c['Config']['Hostname']
             domain = c['Config']['Domainname']
@@ -81,10 +132,16 @@ def find_container(ip):
             groups = re.match(pattern, fqdn).groups()
             if _groups and groups:
                 if groups[0] == _groups[0]:
+                    msg = 'Container id {0} mapped to {1} by FQDN match'
+                    log.debug(msg.format(_id, ip))
+                    CONTAINER_MAPPING[ip] = _id
                     return c
+
+    log.error('No container found for ip {0}'.format(ip))
     return None
 
 
+@log_exec_time
 def get_role_name_from_ip(ip):
     if app.config['ROLE_MAPPING_FILE']:
         return ROLE_MAPPINGS.get(ip, app.config['DEFAULT_ROLE'])
@@ -92,14 +149,17 @@ def get_role_name_from_ip(ip):
     if container:
         env = container['Config']['Env']
         for e in env:
-            key, _, val = e.partition('=')
+            key, val = e.split('=', 1)
             if key == 'IAM_ROLE':
                 return val
+        msg = "Couldn't find IAM_ROLE variable. Returning DEFAULT_ROLE: {0}"
+        log.debug(msg.format(app.config['DEFAULT_ROLE']))
         return app.config['DEFAULT_ROLE']
     else:
         return None
 
 
+@log_exec_time
 def get_role_info_from_ip(ip):
     role_name = get_role_name_from_ip(ip)
     if not role_name:
@@ -107,7 +167,6 @@ def get_role_info_from_ip(ip):
     try:
         role = get_role(role_name)
     except GetRoleError:
-        logging.exception('Failed to get role {0}.'.format(role_name))
         return {}
     time_format = "%Y-%m-%dT%H:%M:%SZ"
     now = datetime.datetime.now(dateutil.tz.tzutc())
@@ -136,22 +195,26 @@ def _get_credential_reponse(assumed_role):
     }
 
 
+@log_exec_time
 def get_role(role_name):
     iam = iam_client()
     try:
-        role = iam.get_role(RoleName=role_name)
+        with PrintingBlockTimer('iam.get_role'):
+            role = iam.get_role(RoleName=role_name)
     except ClientError as e:
         should_raise = True
         if e.response['ResponseMetadata']['HTTPStatusCode'] == 404:
             if app.config['DEFAULT_ROLE']:
-                role = iam.get_role(RoleName=app.config['DEFAULT_ROLE'])
-                should_raise = False
+                with PrintingBlockTimer('iam.get_role_default'):
+                    role = iam.get_role(RoleName=app.config['DEFAULT_ROLE'])
+                    should_raise = False
         if should_raise:
             response = e.response['ResponseMetadata']
             raise GetRoleError((response['HTTPStatusCode'], e.message))
     return role
 
 
+@log_exec_time
 def get_assumed_role(requested_role, api_version='latest'):
     if requested_role in ROLES:
         assumed_role = ROLES[requested_role]
@@ -161,11 +224,12 @@ def get_assumed_role(requested_role, api_version='latest'):
         if expire_check < expiration:
             return _get_credential_reponse(assumed_role)
     role = get_role(requested_role)
-    sts = sts_client()
-    assumed_role = sts.assume_role(
-        RoleArn=role['Role']['Arn'],
-        RoleSessionName='devproxyauth'
-    )
+    with PrintingBlockTimer('sts.assume_role'):
+        sts = sts_client()
+        assumed_role = sts.assume_role(
+            RoleArn=role['Role']['Arn'],
+            RoleSessionName='devproxyauth'
+        )
     ROLES[role['Role']['RoleName']] = assumed_role
     return _get_credential_reponse(assumed_role)
 
