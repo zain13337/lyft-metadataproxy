@@ -142,7 +142,7 @@ def find_container(ip):
 
 
 @log_exec_time
-def get_role_name_from_ip(ip):
+def get_role_name_from_ip(ip, stripped=True):
     if app.config['ROLE_MAPPING_FILE']:
         return ROLE_MAPPINGS.get(ip, app.config['DEFAULT_ROLE'])
     container = find_container(ip)
@@ -151,17 +151,23 @@ def get_role_name_from_ip(ip):
         for e in env:
             key, val = e.split('=', 1)
             if key == 'IAM_ROLE':
-                return val
+                if stripped:
+                    return val.split('@')[0]
+                else:
+                    return val
         msg = "Couldn't find IAM_ROLE variable. Returning DEFAULT_ROLE: {0}"
         log.debug(msg.format(app.config['DEFAULT_ROLE']))
-        return app.config['DEFAULT_ROLE']
+        if stripped:
+            return app.config['DEFAULT_ROLE'].split('@')[0]
+        else:
+            return app.config['DEFAULT_ROLE']
     else:
         return None
 
 
 @log_exec_time
 def get_role_info_from_ip(ip):
-    role_name = get_role_name_from_ip(ip)
+    role_name = get_role_name_from_ip(ip, stripped=False)
     if not role_name:
         return {}
     try:
