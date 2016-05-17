@@ -31,15 +31,18 @@ def iam_role_name(api_version):
         log.error('Role name not found; returning 404.')
         return '', 404
 
-@app.route('/<api_version>/meta-data/iam/security-credentials/<role_name>')
-def iam_sts_credentials(api_version, role_name):
-    role_name_from_ip = roles.get_role_name_from_ip(request.remote_addr)
-    if role_name_from_ip != role_name:
-        msg = "Role name {0} doesn't match expected role for container {1}"
-        log.error(msg.format(role_name, role_name_from_ip))
+@app.route('/<api_version>/meta-data/iam/security-credentials/<requested_role>')
+def iam_sts_credentials(api_version, requested_role):
+    if not roles.check_role_name_from_ip(request.remote_addr, requested_role):
+        msg = "Role name {0} doesn't match expected role for container"
+        log.error(msg.format(requested_role))
         return '', 404
+    role_name = roles.get_role_name_from_ip(
+        request.remote_addr,
+        stripped=False
+    )
     log.debug('Providing assumed role credentials for {0}'.format(role_name))
-    assumed_role = roles.get_assumed_role(
+    assumed_role = roles.get_assumed_role_credentials(
         requested_role=role_name,
         api_version=api_version
     )

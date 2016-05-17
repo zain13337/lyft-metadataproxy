@@ -6,8 +6,8 @@ from flask import redirect
 from flask import url_for
 from flask import jsonify
 
-
 from metadataproxy import app
+from metadataproxy import log
 from metadataproxy import roles
 from metadataproxy.roles import GetRoleError
 
@@ -110,9 +110,13 @@ def get_iam_slash(api_version):
 
 @app.route('/<api_version>/meta-data/iam/info')
 def get_iam_info(api_version):
-    return jsonify(
-        roles.get_role_info_from_ip(request.remote_addr)
-    )
+    role_name_from_ip = roles.get_role_name_from_ip(request.remote_addr)
+    if role_name_from_ip:
+        log.debug('Providing IAM role info for {0}'.format(role_name_from_ip))
+        return jsonify(roles.get_role_info_from_ip(request.remote_addr))
+    else:
+        log.error('Role name not found; returning 404.')
+        return '', 404
 
 
 @app.route('/<api_version>/meta-data/iam/security-credentials')
@@ -136,12 +140,15 @@ def get_security_credentials_slash(api_version):
     methods=['GET']
 )
 def get_role_credentials(api_version, requested_role):
-    role_name = roles.get_role_name_from_ip(request.remote_addr)
-    if role_name != requested_role:
+    if not roles.check_role_name_from_ip(request.remote_addr, requested_role):
         return '', 403
+    role_name = roles.get_role_name_from_ip(
+        request.remote_addr,
+        stripped=False
+    )
     try:
-        assumed_role = roles.get_assumed_role(
-            requested_role=requested_role,
+        assumed_role = roles.get_assumed_role_credentials(
+            requested_role=role_name,
             api_version=api_version
         )
     except GetRoleError as e:
