@@ -141,6 +141,13 @@ def find_container(ip):
     return None
 
 
+def check_role_name_from_ip(ip, requested_role):
+    role_name = get_role_name_from_ip(ip)
+    if role_name == requested_role:
+        return True
+    return False
+
+
 @log_exec_time
 def get_role_name_from_ip(ip, stripped=True):
     if app.config['ROLE_MAPPING_FILE']:
