@@ -143,8 +143,7 @@ def get_security_credentials_slash(api_version):
 )
 @app.route(
     '/<api_version>/meta-data/iam/security-credentials/<requested_role>/<path:junk>',
-    methods=['GET'],
-    strict_slashes=False
+    methods=['GET']
 )
 def get_role_credentials(api_version, requested_role, junk=None):
     if not roles.check_role_name_from_ip(request.remote_addr, requested_role):
