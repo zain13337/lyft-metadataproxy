@@ -23,8 +23,9 @@ def _supports_iam(version):
     '''
     return version >= '2012-01-12'
 
-@app.route('/<api_version>/meta-data/iam/info')
-def iam_role_info(api_version):
+@app.route('/<api_version>/meta-data/iam/info', strict_slashes=False)
+@app.route('/<api_version>/meta-data/iam/info/<path:junk>')
+def iam_role_info(api_version, junk=None):
     if not _supports_iam(api_version):
         return passthrough(request.path)
 
@@ -48,8 +49,10 @@ def iam_role_name(api_version):
         log.error('Role name not found; returning 404.')
         return '', 404
 
-@app.route('/<api_version>/meta-data/iam/security-credentials/<requested_role>')
-def iam_sts_credentials(api_version, requested_role):
+@app.route('/<api_version>/meta-data/iam/security-credentials/<requested_role>',
+           strict_slashes=False)
+@app.route('/<api_version>/meta-data/iam/security-credentials/<requested_role>/<path:junk>')
+def iam_sts_credentials(api_version, requested_role, junk=None):
     if not _supports_iam(api_version):
         return passthrough(request.path)
 
