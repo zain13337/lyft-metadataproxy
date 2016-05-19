@@ -12,8 +12,22 @@ from metadataproxy import app
 from metadataproxy import log
 from metadataproxy import roles
 
+
+def _supports_iam(version):
+    '''Check the meta-data version for IAM support
+
+    API versions before 2012-01-12 don't support the iam/ subtree.
+    This function works because:
+    >>> '1.0' < '2007-01-19' < '2014-11-05' < 'latest'
+    True
+    '''
+    return version >= '2012-01-12'
+
 @app.route('/<api_version>/meta-data/iam/info')
 def iam_role_info(api_version):
+    if not _supports_iam(api_version):
+        return passthrough(request.path)
+
     role_name_from_ip = roles.get_role_name_from_ip(request.remote_addr)
     if role_name_from_ip:
         log.debug('Providing IAM role info for {0}'.format(role_name_from_ip))
@@ -24,6 +38,9 @@ def iam_role_info(api_version):
 
 @app.route('/<api_version>/meta-data/iam/security-credentials/')
 def iam_role_name(api_version):
+    if not _supports_iam(api_version):
+        return passthrough(request.path)
+
     role_name_from_ip = roles.get_role_name_from_ip(request.remote_addr)
     if role_name_from_ip:
         return role_name_from_ip
@@ -33,6 +50,9 @@ def iam_role_name(api_version):
 
 @app.route('/<api_version>/meta-data/iam/security-credentials/<requested_role>')
 def iam_sts_credentials(api_version, requested_role):
+    if not _supports_iam(api_version):
+        return passthrough(request.path)
+
     if not roles.check_role_name_from_ip(request.remote_addr, requested_role):
         msg = "Role name {0} doesn't match expected role for container"
         log.error(msg.format(requested_role))
