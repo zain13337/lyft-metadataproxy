@@ -108,8 +108,9 @@ def get_iam_slash(api_version):
     return 'info\nsecurity-credentials/', 200
 
 
-@app.route('/<api_version>/meta-data/iam/info')
-def get_iam_info(api_version):
+@app.route('/<api_version>/meta-data/iam/info', strict_slashes=False)
+@app.route('/<api_version>/meta-data/iam/info/<path:junk>')
+def get_iam_info(api_version, junk=None):
     role_name_from_ip = roles.get_role_name_from_ip(request.remote_addr)
     if role_name_from_ip:
         log.debug('Providing IAM role info for {0}'.format(role_name_from_ip))
@@ -137,9 +138,15 @@ def get_security_credentials_slash(api_version):
 
 @app.route(
     '/<api_version>/meta-data/iam/security-credentials/<requested_role>',
-    methods=['GET']
+    methods=['GET'],
+    strict_slashes=False
 )
-def get_role_credentials(api_version, requested_role):
+@app.route(
+    '/<api_version>/meta-data/iam/security-credentials/<requested_role>/<path:junk>',
+    methods=['GET'],
+    strict_slashes=False
+)
+def get_role_credentials(api_version, requested_role, junk=None):
     if not roles.check_role_name_from_ip(request.remote_addr, requested_role):
         return '', 403
     role_name = roles.get_role_name_from_ip(
