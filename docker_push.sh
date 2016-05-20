@@ -13,7 +13,7 @@ then
     docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
     export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
     echo "TAG is $TAG"
-    docker build -f Dockerfile .
+    docker build -f Dockerfile -t $REPO:$COMMIT .
     docker tag $REPO:$COMMIT $REPO:$TAG
     docker push $REPO:$TAG
 else
