@@ -7,3 +7,13 @@ containers:
     mounts:
       - /var/run/docker.sock
     privileged: True
+
+groups:
+  - name: dev
+    members:
+      - metadataproxy.server
+
+tests:
+  - name: startup
+    type: startup
+    group: metadataproxy.dev
