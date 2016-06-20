@@ -3,6 +3,8 @@ description: Intercepts calls to EC2 Metadata Service from containers.
 repository: git@github.com:lyft/metadataproxy.git
 containers:
   - name: server
+    command: /code/metadataproxy/entrypoint.sh
+    provision: /code/metadataproxy/provision.sh
     network: host
     mounts:
       - /var/run/docker.sock
