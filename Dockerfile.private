@@ -1,4 +1,5 @@
 FROM lyft/gunicorn:5951eea6fb5549b2e869d9776316bcc101c920e1
+RUN apt-get update -y && apt-get install -y iptables
 COPY requirements.txt /code/metadataproxy/requirements.txt
 RUN /code/containers/python/pip-installer /code/metadataproxy/requirements.txt
 COPY . /code/metadataproxy/
