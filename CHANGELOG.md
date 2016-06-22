@@ -1,3 +1,7 @@
+## 1.1.3
+
+* Bump in release to fix pypi release process
+
 ## 1.1.2
 
 * Bump in release to be able to publish to pypi
