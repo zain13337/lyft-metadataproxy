@@ -8,6 +8,9 @@ containers:
     network: host
     mounts:
       - /var/run/docker.sock
+    exports:
+      - name: api
+        port: 45001
     privileged: True
 
 groups:
