@@ -21,7 +21,7 @@ reqs = reqs + [str(ir.req) for ir in reqs_wsgi]
 
 setup(
     name="metadataproxy",
-    version="1.1.2",
+    version="1.1.3",
     packages=find_packages(exclude=["test*"]),
     install_requires=reqs,
     author="Ryan Lane",
