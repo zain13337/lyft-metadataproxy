@@ -1,3 +1,11 @@
+## 1.2.0
+
+* Look for container IP address in container's networks datastructure
+
+## 1.1.4
+
+* Upgrade docker-py to fix auth parsing issue
+
 ## 1.1.3
 
 * Bump in release to fix pypi release process
