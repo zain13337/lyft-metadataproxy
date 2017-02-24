@@ -1,3 +1,7 @@
+## 1.2.1
+
+* Travis docker fix (packaging change)
+
 ## 1.2.0
 
 * Look for container IP address in container's networks datastructure
