@@ -1,3 +1,15 @@
+## 1.2.4
+
+* Add package data to setup.py for sdist packing fix
+
+## 1.2.3
+
+* Attempt to fix sdist packaging
+
+## 1.2.2
+
+* Attempt to fix sdist packaging
+
 ## 1.2.1
 
 * Travis docker fix (packaging change)
