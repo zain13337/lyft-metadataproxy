@@ -1,3 +1,7 @@
+## 1.2.5
+
+* Add more package data to setup.py for sdist packing fix
+
 ## 1.2.4
 
 * Add package data to setup.py for sdist packing fix
