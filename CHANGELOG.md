@@ -1,3 +1,10 @@
+## 1.3.0
+
+* Fix for reformatting IAM\_ROLE when it matches ARN format
+* Add logging for when the expected role does not match the available role
+* Export PYTHONUNBUFFERED in run-server.sh so logs come out as they are made available vs when python decides it's time
+* Send log-file to stdout as well in run-server.sh
+
 ## 1.2.6
 
 * In run-server.sh, sent stdout and stderr to stdout
