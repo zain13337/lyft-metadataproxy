@@ -1,3 +1,7 @@
+## 1.3.1
+
+* Fix for k8s network lookup stacktrace
+
 ## 1.3.0
 
 * Fix for reformatting IAM\_ROLE when it matches ARN format
