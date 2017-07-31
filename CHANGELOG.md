@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ## 1.4.0
 
 * Add IAM\_EXTERNAL\_ID variable: if found value will be populated into ExternalId parameter when making AssumeRole call.
@@ -5,6 +6,8 @@
 * Reduce number of calls to Docker API when retrieving credentials.
 * Bump WSGI dependency versions
 
+=======
+>>>>>>> Tag 1.3.2 release
 ## 1.3.2
 
 * Packaging fixes for travis releases to docker hub
