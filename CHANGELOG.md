@@ -1,3 +1,7 @@
+## 1.5.0
+
+* New support retrieving container IP from Rancher labels
+
 ## 1.4.0
 
 * Add IAM\_EXTERNAL\_ID variable: if found value will be populated into ExternalId parameter when making AssumeRole call.
