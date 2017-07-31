@@ -25,11 +25,7 @@ reqs = reqs_base + reqs_wsgi
 
 setup(
     name="metadataproxy",
-<<<<<<< HEAD
     version="1.4.0",
-=======
-    version="1.3.2",
->>>>>>> Tag 1.3.2 release
     packages=find_packages(exclude=["test*"]),
     include_package_data=True,
     zip_safe=False,
