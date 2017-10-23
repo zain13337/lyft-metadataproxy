@@ -12,7 +12,7 @@ containers:
     start_phase: sequential_init
     exports:
       - name: api
-        port: 45001
+        port: 4501
     privileged: True
 
 groups:
