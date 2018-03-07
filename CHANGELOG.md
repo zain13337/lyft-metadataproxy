@@ -1,3 +1,7 @@
+## 1.6.0
+
+* When proxying requests, also return the status code of the proxied request.
+
 ## 1.5.2
 
 * Prevent possibility of race condition during docker inspect
