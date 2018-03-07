@@ -84,5 +84,6 @@ def passthrough(url=''):
     )
     return Response(
         stream_with_context(req.iter_content()),
-        content_type=req.headers['content-type']
+        content_type=req.headers['content-type'],
+        status=req.status_code
     )
