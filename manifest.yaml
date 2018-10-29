@@ -9,9 +9,6 @@ containers:
     mounts:
       - /var/run/docker_sockets
     start_phase: sequential_init
-    exports:
-      - name: api
-        port: 45001
     privileged: True
 
 groups:
