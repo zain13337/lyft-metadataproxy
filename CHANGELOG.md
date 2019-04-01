@@ -1,3 +1,7 @@
+## 1.7.0
+
+* Update mock URI for returning availability-zone. Fix for incorrect mocking of ``/latest/meta-data/placement/availability-zone``
+
 ## 1.6.0
 
 * When proxying requests, also return the status code of the proxied request.
