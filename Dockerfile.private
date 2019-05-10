@@ -10,5 +10,7 @@ RUN : \
     && virtualenv /venv -ppython2.7 \
     && pip install -r/code/metadataproxy/requirements_wsgi.txt \
     && pip install -r/code/metadataproxy/requirements.txt
+RUN mkdir -p /etc/gunicorn
+COPY gunicorn.conf /etc/gunicorn/gunicorn.conf
 COPY . /code/metadataproxy/
 ENV DOCKER_URL 'unix://var/run/docker_sockets/docker.sock'
