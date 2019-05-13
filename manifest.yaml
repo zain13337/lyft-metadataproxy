@@ -1,6 +1,8 @@
 name: metadataproxy
 description: Intercepts calls to EC2 Metadata Service from containers.
 repository: git@github.com:lyft/metadataproxy.git
+pagerduty_escalation_policy: DevX
+team_email: devnull@lyft.com
 containers:
   - name: server
     command: /code/metadataproxy/entrypoint.sh
