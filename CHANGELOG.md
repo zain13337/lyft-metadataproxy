@@ -1,3 +1,7 @@
+## 1.8.0
+
+* Added support for finding mesos containers
+
 ## 1.7.0
 
 * Update mock URI for returning availability-zone. Fix for incorrect mocking of ``/latest/meta-data/placement/availability-zone``
