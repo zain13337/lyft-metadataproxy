@@ -1,3 +1,7 @@
+## 1.9.0
+
+* Split envvars correctly, when vars are `KEY`, rather than `KEY=VAL`, rather than throwing an exception
+
 ## 1.8.0
 
 * Added support for finding mesos containers
