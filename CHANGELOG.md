@@ -1,3 +1,7 @@
+## 1.9.1
+
+* Docker packaging issue fix
+
 ## 1.9.0
 
 * Split envvars correctly, when vars are `KEY`, rather than `KEY=VAL`, rather than throwing an exception
