@@ -1,3 +1,7 @@
+## 1.10.0
+
+* Support assuming roles with a Path
+
 ## 1.9.1
 
 * Docker packaging issue fix
