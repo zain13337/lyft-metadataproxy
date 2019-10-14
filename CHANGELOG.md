@@ -1,3 +1,9 @@
+## 1.11.0
+
+* Added PyYAML, python-json-logger, and blinker dependencies
+* Included a default gunicorn config and logging config
+* All logs are now sent to stdout by default, which should make flask logs available and written into the log file now
+
 ## 1.10.0
 
 * Support assuming roles with a Path
