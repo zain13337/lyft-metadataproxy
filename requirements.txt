@@ -1,7 +1,7 @@
 # YAML parser and emitter for Python
 # License: MIT
 # Upstream url: http://pyyaml.org/wiki/PyYAML
-PyYAML==3.12
+PyYAML==5.1
 
 # Boto3 is the Amazon Web Services (AWS) Software Development Kit (SDK)
 # for Python.
