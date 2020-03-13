@@ -1,3 +1,7 @@
+## 2.1.0
+
+* Fix for the gunicorn logging run location in gunicorn.conf, when trying to catch an exception that only exists in python3.
+
 ## 2.0.0
 
 * Though we don't expect this to be a breaking change, the default renewal time for IAM credentials has been changed from 5 minutes to 15 minutes, for better compatibility with aws-sdk-java. This time can be changed via the `ROLE_EXPIRATION_THRESHOLD` setting.
