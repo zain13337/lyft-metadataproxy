@@ -11,7 +11,7 @@ containers:
     mounts:
       - /var/run/docker_sockets
     start_phase: sequential_init
-    privileged: True
+    privileged: true
 
 groups:
   - name: dev
@@ -24,13 +24,17 @@ tests:
     group: metadataproxy.dev
 deploy:
   - name: development
-    legacy: False
+    legacy: false
+    environment: development
   - name: staging
-    legacy: False
+    legacy: false
+    environment: staging
   - name: canary
-    legacy: False
+    legacy: false
+    environment: production
   - name: production
-    legacy: False
+    legacy: false
+    environment: production
 builder:
   name: docker_build
   params:
