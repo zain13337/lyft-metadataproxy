@@ -23,18 +23,18 @@ tests:
     type: startup
     group: metadataproxy.dev
 deploy:
-  - name: development
-    legacy: false
-    environment: development
   - name: staging
     legacy: false
     environment: staging
+    orca: []
   - name: canary
     legacy: false
     environment: production
+    orca: []
   - name: production
     legacy: false
     environment: production
+    orca: []
 builder:
   name: docker_build
   params:
