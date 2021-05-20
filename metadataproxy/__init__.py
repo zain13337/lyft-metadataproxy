@@ -2,7 +2,6 @@ from flask import Flask
 
 from metadataproxy import settings
 
-
 app = Flask(__name__)
 app.config.from_object(settings)
 app.debug = app.config['DEBUG']
