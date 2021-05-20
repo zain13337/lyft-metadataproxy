@@ -1,3 +1,7 @@
+## 2.2.0
+
+* Added `PATCH_ECS_ALLOWED_HOSTS` config setting, to support aws-vault's --ecs-server option
+
 ## 2.1.0
 
 * Fix for the gunicorn logging run location in gunicorn.conf, when trying to catch an exception that only exists in python3.

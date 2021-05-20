@@ -89,6 +89,7 @@ script, or set via docker environment variables.
 | ROLE\_MAPPING\_FILE | Path String | | A json file that has a dict mapping of IP addresses to role names. Can be used if docker networking has been disabled and you are managing IP addressing for containers through another process. |
 | ROLE\_REVERSE\_LOOKUP | Boolean | False | Enable performing a reverse lookup of incoming IP addresses to match containers by hostname. Useful if you've disabled networking in docker, but set hostnames for containers in /etc/hosts or DNS. |
 | HOSTNAME\_MATCH\_REGEX | Regex String | `^.*$` | Limit reverse lookup container matching to hostnames that match the specified pattern. |
+| PATCH_ECS_ALLOWED_HOSTS | String | | Patch botocore's allowed hosts for ContainerMetadataFetcher to support aws-vault's --ecs-server option. This will inject the provided host into the allowed addresses botocore will allow for the AWS_CONTAINER_CREDENTIALS_FULL_URI environment. |
 
 #### Default Roles
 

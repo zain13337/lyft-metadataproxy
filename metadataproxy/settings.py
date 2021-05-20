@@ -111,3 +111,8 @@ MESOS_STATE_LOOKUP = bool_env('MESOS_STATE_LOOKUP', False)
 MESOS_STATE_URL = str_env('MESOS_STATE_URL', 'http://localhost:5051/state')
 # Timeout to use when calling the mesos state endpoint
 MESOS_STATE_TIMEOUT = int_env('MESOS_STATE_TIMEOUT', 2)
+
+# Patch botocore's allowed hosts for ContainerMetadataFetcher to support aws-vault's
+# --ecs-server option. This will inject docker for mac's URL for the host into the
+# allowed addresses botocore will talk to.
+PATCH_ECS_ALLOWED_HOSTS = str_env('PATCH_ECS_ALLOWED_HOSTS')
