@@ -115,4 +115,4 @@ MESOS_STATE_TIMEOUT = int_env('MESOS_STATE_TIMEOUT', 2)
 # Patch botocore's allowed hosts for ContainerMetadataFetcher to support aws-vault's
 # --ecs-server option. This will inject docker for mac's URL for the host into the
 # allowed addresses botocore will talk to.
-PATCH_ECS_ALLOWED_HOSTS = bool_env('PATCH_ECS_ALLOWED_HOSTS', False)
+PATCH_ECS_ALLOWED_HOSTS = str_env('PATCH_ECS_ALLOWED_HOSTS')
