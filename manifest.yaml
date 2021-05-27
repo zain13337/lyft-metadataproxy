@@ -26,15 +26,12 @@ deploy:
   - name: staging
     legacy: false
     environment: staging
-    orca: []
   - name: canary
     legacy: false
     environment: production
-    orca: []
   - name: production
     legacy: false
     environment: production
-    orca: []
 builder:
   name: docker_build
   params:
