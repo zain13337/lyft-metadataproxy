@@ -86,7 +86,8 @@ DEFAULT_ACCOUNT_ID = str_env('DEFAULT_ACCOUNT_ID')
 #   role_name: myrole
 #   account_id: 12345
 AWS_ACCOUNT_MAP = json.loads(str_env('AWS_ACCOUNT_MAP', '{}'))
-
+# AWS Region to resolve region based STS service endpoint and to make calls against it.
+AWS_REGION = str_env('AWS_REGION')
 # The threshold before credentials expire in minutes at which metadataproxy will attempt
 # to load new credentials. The default in previous versions of metadataproxy was 5, but
 # we choose to make the new default 15 for better compatibility with aws-sdk-java.

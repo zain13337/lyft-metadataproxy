@@ -1,17 +1,17 @@
 # Import python libs
 import datetime
-import dateutil.tz
-import logging
 import json
-import socket
+import logging
 import re
+import socket
 import timeit
-import requests
 
 # Import third party libs
 import boto3
+import dateutil.tz
 import docker
 import docker.errors
+import requests
 from botocore.exceptions import ClientError
 from cachetools import cached, TTLCache
 
@@ -82,7 +82,13 @@ def iam_client():
 def sts_client():
     global _sts_client
     if _sts_client is None:
-        _sts_client = boto3.client('sts')
+        aws_region = app.config.get('AWS_REGION')
+
+        _sts_client = boto3.client(
+            service_name='sts',
+            region_name=aws_region,
+            endpoint_url=f'https://sts.{aws_region}.amazonaws.com'
+        ) if aws_region else boto3.client(service_name='sts')
     return _sts_client
 
 
